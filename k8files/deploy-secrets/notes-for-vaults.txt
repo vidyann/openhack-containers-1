@@ -1,0 +1,38 @@
+
+
+az ad sp create-for-rbac --name tripsValueServicePrincipal --skip-assignment
+  "appId": "7576c001-a319-4805-a7f3-90431d36ed37",
+  "password": "aYUKv_Xz1Smed6WblyyNgRO01I7IGrftlW",
+
+az aks show --name trips-aks --resource-group teamResources
+
+"clientId": "8d781073-67c4-420f-8a71-b11bea4acc73"
+/subscriptions/878db795-8002-456c-9841-bc2c43b269ea
+"nodeResourceGroup": "MC_teamResources_trips-aks_eastus",
+
+
+helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts
+helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name
+
+
+az keyvault create --name "trips-secrets" --resource-group "teamResources" --location eastus
+
+az keyvault secret set --vault-name "trips-secrets" --name "SQLUSER" --value "sqladminbWu2329"
+az keyvault secret set --vault-name "trips-secrets" --name "SQLPASSWORD" --value "zU5qu2Hu9"
+az keyvault secret set --vault-name "trips-secrets" --name "SQLSERVER" --value "sqlserverbwu2329.database.windows.net"
+az keyvault secret set --vault-name "trips-secrets" --name "SQLDBNAME" --value "mydrivingDB"
+az keyvault secret set --vault-name "trips-secrets" --name "SQLCONNECTIONSTRING" --value "Server=tcp:sqlserverumr6730.database.windows.net,1433;Initial Catalog=mydrivingDB;Persist Security Info=False;User ID=sqladminuMr6730;Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+
+
+az role assignment create --role Reader \
+    --assignee 7576c001-a319-4805-a7f3-90431d36ed37 \
+    --scope /subscriptions/878db795-8002-456c-9841-bc2c43b269ea/resourcegroups/teamResources/providers/Microsoft.KeyVault/vaults/trips-secrets
+
+  "principalId": "0b80adfe-1a93-4908-b520-b435dfb557c1",
+
+az keyvault set-policy -n trips-secrets --secret-permissions get --spn 7576c001-a319-4805-a7f3-90431d36ed37
+
+kubectl create secret generic secrets-store-creds --namespace api  --from-literal clientid=7576c001-a319-4805-a7f3-90431d36ed37  --from-literal clientsecret=aYUKv_Xz1Smed6WblyyNgRO01I7IGrftlW
+
+
+

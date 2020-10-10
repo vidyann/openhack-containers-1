@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-java
+  namespace: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-java
+  template:
+    metadata:
+      labels:
+        app: user-java
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: user-java
+        image: registryumr6730.azurecr.io/tripinsights/user-java:1.0
+        env:
+        - name: SQL_USER
+          value: "sqladminbWu2329"
+        - name: SQL_PASSWORD
+          value: "zU5qu2Hu9"
+        - name: SQL_SERVER
+          value: "sqlserverbwu2329.database.windows.net"
+        - name: SQL_DBNAME
+          value: "mydrivingDB"
+        ports:
+        - containerPort: 80
+          name: http
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-java
+  namespace: api  
+spec:
+  ports:
+  - port: 80
+    targetPort: http
+  selector:
+    app: user-java

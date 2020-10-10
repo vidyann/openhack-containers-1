@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips
+  namespace: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+        - name: trips
+          image: registryumr6730.azurecr.io/tripinsights/trips:1.0
+          env:
+          - name: SQL_USER
+            value: "sqladminbWu2329"
+          - name: SQL_PASSWORD
+            value: "zU5qu2Hu9"
+          - name: SQL_SERVER
+            value: "sqlserverbwu2329.database.windows.net"
+          - name: SQL_DBNAME
+            value: "mydrivingDB"
+          ports:
+          - containerPort: 80
+            name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips
+  namespace: api
+spec:
+  ports:
+    - port: 80
+      targetPort: http
+  selector:
+    app: trips
+---

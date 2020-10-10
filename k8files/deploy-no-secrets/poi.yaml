@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poi
+  namespace: api  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poi
+  template:
+    metadata:
+      labels:
+        app: poi
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+        - name: poi
+          image: registryumr6730.azurecr.io/tripinsights/poi:1.4
+          env:
+          - name: SQL_USER
+            value: "sqladminbWu2329"
+          - name: SQL_PASSWORD
+            value: "zU5qu2Hu9"
+          - name: SQL_SERVER
+            value: "sqlserverbwu2329.database.windows.net"
+          - name: SQL_DBNAME
+            value: "mydrivingDB"
+          resources: 
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          ports:
+          - containerPort: 80
+            name: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: poi
+  namespace: api
+spec:
+  ports:
+    - port: 80
+      targetPort: web
+  selector:
+    app: poi
+---
